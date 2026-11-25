@@ -1,0 +1,38 @@
+{
+  "address": "0xA5625f6156455B1a4baF634fC847715C00B8957F",
+  "block": "12210959",
+  "chain": "11155111",
+  "creation": "0xe019475c2cab5fb94c8deb9903b34cc26128d686808b3f85dd10f8b1c8940478",
+  "status": "success",
+  "owner": "0x0D1fB0277bD5581EC4365120AaB5C9b4B34fc49a",
+  "tokenAddress": "0x586da3bd74eE85533FcfcEBad3EDe343dE916e41",
+  "threshold": "10000000000000000000",
+  "ownerBalance": "10008750000000000000000",
+  "testAccount": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+  "testBalance": "1250000000000000000",
+  "denial": "The contract function \"post\" reverted with the following reason:\nNot enough tokens",
+  "events": [
+    {
+      "eventName": "NewPost",
+      "args": {
+        "user": "0x0D1fB0277bD5581EC4365120AaB5C9b4B34fc49a",
+        "tag": "0x5e704a1c4c4720f7ab7913b97681445a8f37ef62f21cdc68cf2279520459ee0f",
+        "content": "Лабораторная работа 4. Публикация разрешена после проверки баланса STDY."
+      },
+      "address": "0xa5625f6156455b1a4baf634fc847715c00b8957f",
+      "topics": [
+        "0x6c7f3182d7e4cb876251f9ae1489975fdbbf15d9f35d393f2ac9b1ff57cec69f",
+        "0x0000000000000000000000000d1fb0277bd5581ec4365120aab5c9b4b34fc49a",
+        "0x5e704a1c4c4720f7ab7913b97681445a8f37ef62f21cdc68cf2279520459ee0f"
+      ],
+      "data": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000081d09bd0b0d0b1d0bed180d0b0d182d0bed180d0bdd0b0d18f20d180d0b0d0b1d0bed182d0b020342e20d09fd183d0b1d0bbd0b8d0bad0b0d186d0b8d18f20d180d0b0d0b7d180d0b5d188d0b5d0bdd0b020d0bfd0bed181d0bbd0b520d0bfd180d0bed0b2d0b5d180d0bad0b820d0b1d0b0d0bbd0b0d0bdd181d0b020535444592e00000000000000000000000000000000000000000000000000000000000000",
+      "blockHash": "0xdc59522fa9523cefdcab39437a7cf96020241a799b86278ce01878fc62dd2a3e",
+      "blockNumber": "12210976",
+      "blockTimestamp": "1795627608",
+      "transactionHash": "0x112a5167d77c95fa8c119a9f4536aac4eedaab91bbfaf44302ebc5eb74b5362c",
+      "transactionIndex": 19,
+      "logIndex": 59,
+      "removed": false
+    }
+  ]
+}

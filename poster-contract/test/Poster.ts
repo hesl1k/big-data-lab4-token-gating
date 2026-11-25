@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {describe,it} from 'node:test';
+import {network} from 'hardhat';
+import {zeroAddress,keccak256,toHex} from 'viem';
+const U=10n**18n;
+describe('Poster token gating',async()=>{
+ const {viem}=await network.create();const client=await viem.getPublicClient();const [owner,other]=await viem.getWalletClients();
+ async function setup(){const token=await viem.deployContract('Token',['Study Token','STDY',10000n*U]);const poster=await viem.deployContract('Poster',[token.address,10n*U]);return {token,poster};}
+ it('publishes event with enough tokens and does not charge tokens',async()=>{const {token,poster}=await setup();const hash=await poster.write.post(['Проверка','учёба']);const r=await client.waitForTransactionReceipt({hash});const logs=await client.getContractEvents({address:poster.address,abi:poster.abi,eventName:'NewPost',fromBlock:r.blockNumber,strict:true});assert.equal(logs.length,1);assert.equal(logs[0].args.content,'Проверка');assert.equal(logs[0].args.tag,keccak256(toHex('учёба')));assert.equal(await token.read.balanceOf([owner.account.address]),10000n*U);});
+ it('rejects zero balance and emits no NewPost',async()=>{const {poster}=await setup();await assert.rejects(poster.write.post(['Denied','test'],{account:other.account}),/Not enough tokens/);assert.equal((await client.getContractEvents({address:poster.address,abi:poster.abi,eventName:'NewPost',fromBlock:0n})).length,0);});
+ it('allows exactly threshold',async()=>{const {token,poster}=await setup();await token.write.transfer([other.account.address,10n*U]);await poster.write.post(['Exact','test'],{account:other.account});});
+ it('rejects one unit below threshold',async()=>{const {token,poster}=await setup();await token.write.transfer([other.account.address,10n*U-1n]);await assert.rejects(poster.write.post(['Below','test'],{account:other.account}),/Not enough tokens/);});
+ it('checks current balance after tokens are transferred away',async()=>{const {token,poster}=await setup();await token.write.transfer([other.account.address,10n*U]);await poster.write.post(['Before','test'],{account:other.account});await token.write.transfer([owner.account.address,U],{account:other.account});await assert.rejects(poster.write.post(['After','test'],{account:other.account}),/Not enough tokens/);});
+ it('owner changes threshold; outsiders cannot',async()=>{const {poster}=await setup();await assert.rejects(poster.write.setThreshold([0n],{account:other.account}),/not the owner/);await poster.write.setThreshold([0n]);await poster.write.post(['Zero threshold','test'],{account:other.account});});
+ it('uses new token after owner changes address',async()=>{const {poster}=await setup();const second=await viem.deployContract('Token',['Second','TWO',100n]);await second.write.transfer([other.account.address,20n]);await poster.write.setTokenAddress([second.address]);await poster.write.setThreshold([10n]);await poster.write.post(['New token','test'],{account:other.account});});
+ it('rejects token setting by outsider and rejects EOA',async()=>{const {poster}=await setup();await assert.rejects(poster.write.setTokenAddress([owner.account.address],{account:other.account}),/not the owner/);await assert.rejects(poster.write.setTokenAddress([owner.account.address]),/Token must be a contract/);});
+ it('transfers admin rights and revokes previous owner',async()=>{const {poster}=await setup();await poster.write.transferOwnership([other.account.address]);await assert.rejects(poster.write.setThreshold([0n]),/not the owner/);await poster.write.setThreshold([0n],{account:other.account});});
+ it('rejects zero owner and unauthorized ownership transfer',async()=>{const {poster}=await setup();await assert.rejects(poster.write.transferOwnership([zeroAddress]),/zero address/);await assert.rejects(poster.write.transferOwnership([other.account.address],{account:other.account}),/not the owner/);});
+ it('unconfigured token prevents posting even with zero threshold',async()=>{const poster=await viem.deployContract('Poster',[zeroAddress,0n]);await assert.rejects(poster.write.post(['Unconfigured','test']));});
+});

@@ -1,0 +1,3 @@
+import toolbox from "@nomicfoundation/hardhat-toolbox-viem";
+import { configVariable, defineConfig } from "hardhat/config";
+export default defineConfig({plugins:[toolbox],solidity:{version:"0.8.30",path:"./node_modules/solc/soljson.js",preferWasm:true,settings:{optimizer:{enabled:true,runs:200},evmVersion:"shanghai"}},networks:{localhost:{type:"http",url:"http://127.0.0.1:8545"},sepolia:{type:"http",url:"https://ethereum-sepolia-rpc.publicnode.com",chainId:11155111,accounts:[configVariable("SEPOLIA_PRIVATE_KEY")],timeout:200000}},verify:{etherscan:{apiKey:configVariable("ETHERSCAN_API_KEY")}}});
